@@ -1,5 +1,13 @@
-cp .tmux.conf ~/.tmux.conf
 cd ~
+
+# Basics
+sudo apt install vim
+sudo apt install zsh
+sudo apt install git
+sudo apt install curl
+sudo apt install htop
+sudo apt install bmon
+sudo apt install ncdu
 
 # Install powerline fonts
 git clone https://github.com/powerline/fonts.git --depth=1
@@ -12,9 +20,11 @@ rm -rf fonts
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # Install tmux
+cp .tmux.conf ~/.tmux.conf
 sudo apt-get update
 sudo apt-get install tmux
 git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepak
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install fzf - Linux
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
