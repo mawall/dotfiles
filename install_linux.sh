@@ -1,5 +1,27 @@
 #! /bin/bash
 
+usage(){
+cat <<EOF
+USAGE: ./install_linux [OPTIONS]
+    Marcus' Linux setup script - will install and configure basic linux software. Has been tested on Ubuntu 18.04.
+    List of available packages for installation:
+        - defaults: Basic linux utilities, oh my zsh, tmux and fzf
+        - fusuma: Multitouch gestures for Ubuntu
+    If the 'specified_only' option is not given, only the default package will be installed
+
+    After installation remember to:
+        1. Check fusuma installation paht using 'which fusuma'
+        2. Press alt + F2, enter 'gnome-session-properties'
+        3. Add fusuma using the -d option
+        4. Use 'prefix + I' when first starting tmux to install plugins
+
+OPTIONS:
+    -s|--specified_only     Install specified packages only
+    -d|--defaults           Install default package
+    -f|--fusuma             Install fusuma package
+EOF
+}
+
 install_defaults(){
   cd ~
 
@@ -49,6 +71,10 @@ install_fusuma(){
   sudo apt-get install xdotool
   gsettings set org.gnome.desktop.peripherals.touchpad send-events enabled
   sudo gem update fusuma
+
+  # create config file
+  mkdir -p ~/.config/fusuma
+  cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
 }
 
 
@@ -59,8 +85,9 @@ main(){
     install_defaults
   elif [[ $fusuma == true ]]; then
     install_fusuma
+  else
+    echo "No packages specified"
   fi
-  echo "Remember to use prefix+I when first starting tmux to install plugins"
   zsh
 }
 
@@ -70,6 +97,10 @@ fusuma=false
 while [[ $# -gt 0 ]]; do
 
     case $1 in
+        -h|--help)
+        usage
+        shift 1 ;;
+
         -d|--defaults)
         defaults=true
         shift 1 ;;
@@ -84,7 +115,7 @@ while [[ $# -gt 0 ]]; do
 
         *)
         echo "Unknown option: $1";
-        # show usage
+        usage
         exit 1 ;;
     esac
 
