@@ -3,11 +3,13 @@
 usage(){
 cat <<EOF
 USAGE: ./install_linux [OPTIONS]
-    Marcus' Linux setup script - will install and configure basic linux software. Has been tested on Ubuntu 18.04.
+    Marcus' system setup script - will install and configure basic software on unix-based systems.
     List of available packages for installation:
-        - defaults: Basic linux utilities, oh my zsh, tmux and fzf
+        - linux: Basic linux utilities, oh my zsh, tmux and fzf
+        - mac: Homebrew, oh my zsh, tmux and fzf
         - fusuma: Multitouch gestures for Ubuntu
-    If the 'specified_only' option is not given, only the default package will be installed
+    If the 'specified_only' option is not given, only the linux package will be installed.
+    Tested on Ubuntu 18.04 and macOS Mojave.
 
     After installation remember to:
         1. Check fusuma installation paht using 'which fusuma'
@@ -17,12 +19,14 @@ USAGE: ./install_linux [OPTIONS]
 
 OPTIONS:
     -s|--specified_only     Install specified packages only
-    -d|--defaults           Install default package
+    -l|--linux              Install linux default package
+    -m|--mac                Install mac default package
     -f|--fusuma             Install fusuma package
 EOF
 }
 
-install_defaults(){
+install_linux(){
+  echo "Installing linux defaults"
   cd ~
 
   # Basics
@@ -60,6 +64,36 @@ install_defaults(){
   # TODO - Further vim integration: https://github.com/junegunn/fzf.vim
 }
 
+install_mac(){
+  echo "Installing mac defaults"
+  cd ~
+
+  # Install homebrew
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+  # Install powerline fonts
+  git clone https://github.com/powerline/fonts.git --depth=1
+  cd fonts
+  ./install.sh
+  cd ..
+  rm -rf fonts
+
+  # Install Oh my zsh
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+  # Install tmux
+  cp .tmux.conf ~/.tmux.conf
+  brew install tmux
+  git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack
+
+  # Install fzf - Mac
+  brew install fzf
+  $(brew --prefix)/opt/fzf/install
+
+  # Enable fzf as vim plugin
+  set rtp+=~/.fzf
+}
+
 install_fusuma(){
   # Install fusuma for multitouch gestures
   # https://github.com/iberianpig/fusuma/
@@ -80,19 +114,22 @@ install_fusuma(){
 
 main(){
   if [[ $specified_only == false ]]; then
-    defaults=true
-  elif [[ $defaults == true ]]; then
-    install_defaults
+    linux=true
+  elif [[ $linux == true ]]; then
+    install_linux
+  elif [[ $mac == true ]]; then
+    install_mac
   elif [[ $fusuma == true ]]; then
     install_fusuma
   else
-    echo "No packages specified"
+    echo "No package specified"
   fi
   zsh
 }
 
 specified_only=false
-defaults=false
+linux=false
+mac=false
 fusuma=false
 while [[ $# -gt 0 ]]; do
 
@@ -101,8 +138,12 @@ while [[ $# -gt 0 ]]; do
         usage
         shift 1 ;;
 
-        -d|--defaults)
-        defaults=true
+        -l|--linux)
+        linux=true
+        shift 1 ;;
+
+        -m|--mac)
+        mac=true
         shift 1 ;;
 
         -f|--fusuma)
