@@ -30,13 +30,14 @@ install_linux(){
   cd ~
 
   # Basics
-  sudo apt install vim
-  sudo apt install zsh
-  sudo apt install git
-  sudo apt install curl
-  sudo apt install htop
-  sudo apt install bmon
-  sudo apt install ncdu
+  sudo apt update && sudo apt install -y \
+    vim \
+    zsh \
+    git \
+    curl \
+    htop \
+    bmon \
+    ncdu
 
   # Install powerline fonts
   git clone https://github.com/powerline/fonts.git --depth=1
@@ -59,9 +60,9 @@ install_linux(){
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install
 
-  # Enable fzf as vim plugin
-  set rtp+=~/.fzf
-  # TODO - Further vim integration: https://github.com/junegunn/fzf.vim
+  # Set up global gitignore
+  cp .gitignore-global ~/.gitignore_global
+  git config --global core.excludesfile ~/.gitignore_global
 }
 
 install_mac(){
@@ -109,6 +110,15 @@ install_fusuma(){
   # create config file
   mkdir -p ~/.config/fusuma
   cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
+}
+
+configure_vim(){
+  tic -o ~/.terminfo xterm-256color.terminfo
+  export TERM=xterm-256color
+  cp .vimrc ~/.vimrc
+
+  # Install Vundle
+  git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 }
 
 
