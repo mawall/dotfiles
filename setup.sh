@@ -31,7 +31,7 @@ install_linux(){
 
   # Basics
   sudo apt update && sudo apt install -y \
-    vim \
+    vim-gnome \
     zsh \
     git \
     curl \
@@ -134,7 +134,6 @@ main(){
   else
     echo "No package specified"
   fi
-  zsh
 }
 
 specified_only=false
