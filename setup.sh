@@ -123,23 +123,30 @@ configure_vim(){
 
 
 main(){
-  if [[ $specified_only == false ]]; then
-    linux=true
-  elif [[ $linux == true ]]; then
-    install_linux
-  elif [[ $mac == true ]]; then
-    install_mac
-  elif [[ $fusuma == true ]]; then
-    install_fusuma
+  if [ "$specified_only" = "true" ]; then
+    if [ "$linux" = "true" ]; then
+      install_linux
+    elif [ "$mac" = "true" ]; then
+      install_mac
+    elif [ "$fusuma" = "true" ]; then
+      install_fusuma
+    else
+      echo "No package specified"
+    fi
   else
-    echo "No package specified"
+    read -p "No operating system specified. Linux assumed. Continue? [y/n]" -n 1 -r && echo
+    if [ "$REPLY" = Y ] || [ "$REPLY" = y ]; then
+      install_linux
+    else
+      echo "Exiting." && exit 1
+    fi
   fi
 }
 
-specified_only=false
-linux=false
-mac=false
-fusuma=false
+specified_only="false"
+linux="false"
+mac="false"
+fusuma="false"
 while [[ $# -gt 0 ]]; do
 
     case $1 in
@@ -148,19 +155,19 @@ while [[ $# -gt 0 ]]; do
         shift 1 ;;
 
         -l|--linux)
-        linux=true
+        linux="true"
         shift 1 ;;
 
         -m|--mac)
-        mac=true
+        mac="true"
         shift 1 ;;
 
         -f|--fusuma)
-        fusuma=true
+        fusuma="true"
         shift 1 ;;
 
         -s|--specified_only)
-        specified_only=true
+        specified_only="true"
         shift 1 ;;
 
         *)
