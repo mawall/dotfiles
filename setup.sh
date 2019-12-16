@@ -69,7 +69,7 @@ install_linux(){
   ~/.fzf/install
 
   # Set up global gitignore
-  cp .gitignore-global ~/.gitignore_global
+  cp .gitignore_global ~/.gitignore_global
   git config --global core.excludesfile ~/.gitignore_global
 
   echo_yellow "Successfully installed linux defaults"
@@ -103,6 +103,10 @@ install_mac(){
 
   # Enable fzf as vim plugin
   set rtp+=~/.fzf
+
+  # Set up global gitignore
+  cp .gitignore-global ~/.gitignore_global
+  git config --global core.excludesfile ~/.gitignore_global
 
   echo_yellow "Successfully installed mac defaults"
 }
