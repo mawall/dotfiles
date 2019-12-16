@@ -37,7 +37,7 @@ install_linux(){
   echo_yellow "Installing linux defaults"
   cd ~
 
-  # Basics
+  echo_yellow "Installing packages"
   sudo apt update && sudo apt install -y \
     vim-gnome \
     zsh \
@@ -47,28 +47,28 @@ install_linux(){
     bmon \
     ncdu
 
-  # Install powerline fonts
+  echo_yellow "Installing powerline fonts"
   git clone https://github.com/powerline/fonts.git --depth=1
   cd fonts
   ./install.sh
   cd ..
   rm -rf fonts
 
-  # Install Oh my zsh
+  echo_yellow "Installing Oh my zsh"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-  # Install tmux
+  echo_yellow "Installing tmux"
   cp .tmux.conf ~/.tmux.conf
   sudo apt-get update
   sudo apt-get install tmux
   git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepak
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-  # Install fzf - Linux
+  echo_yellow "Installing fzf"
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install
 
-  # Set up global gitignore
+  echo_yellow "Setting up global gitignore"
   cp .gitignore_global ~/.gitignore_global
   git config --global core.excludesfile ~/.gitignore_global
 
@@ -79,32 +79,29 @@ install_mac(){
   echo_yellow "Installing mac defaults"
   cd ~
 
-  # Install homebrew
+  echo_yellow "Installing homebrew"
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-  # Install powerline fonts
+  echo_yellow "Installing powerline fonts"
   git clone https://github.com/powerline/fonts.git --depth=1
   cd fonts
   ./install.sh
   cd ..
   rm -rf fonts
 
-  # Install Oh my zsh
+  echo_yellow "Installing Oh my zsh"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-  # Install tmux
+  echo_yellow "Installing tmux"
   cp .tmux.conf ~/.tmux.conf
   brew install tmux
   git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack
 
-  # Install fzf - Mac
+  echo_yellow "Installing fzf"
   brew install fzf
-  $(brew --prefix)/opt/fzf/install
+  "$(brew --prefix)"/opt/fzf/install
 
-  # Enable fzf as vim plugin
-  set rtp+=~/.fzf
-
-  # Set up global gitignore
+  echo_yellow "Setting up global gitignore"
   cp .gitignore-global ~/.gitignore_global
   git config --global core.excludesfile ~/.gitignore_global
 
