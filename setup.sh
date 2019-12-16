@@ -25,8 +25,16 @@ OPTIONS:
 EOF
 }
 
+echo_red(){
+    /bin/echo -e "\033[31m${*}\033[0m]"
+}
+
+echo_yellow(){
+    /bin/echo -e "\033[93m${*}\033[0m]"
+}
+
 install_linux(){
-  echo "Installing linux defaults"
+  echo_yellow "Installing linux defaults"
   cd ~
 
   # Basics
@@ -63,10 +71,12 @@ install_linux(){
   # Set up global gitignore
   cp .gitignore-global ~/.gitignore_global
   git config --global core.excludesfile ~/.gitignore_global
+
+  echo_yellow "Successfully installed linux defaults"
 }
 
 install_mac(){
-  echo "Installing mac defaults"
+  echo_yellow "Installing mac defaults"
   cd ~
 
   # Install homebrew
@@ -93,12 +103,14 @@ install_mac(){
 
   # Enable fzf as vim plugin
   set rtp+=~/.fzf
+
+  echo_yellow "Successfully installed mac defaults"
 }
 
 install_fusuma(){
   # Install fusuma for multitouch gestures
   # https://github.com/iberianpig/fusuma/
-  echo "Installing fusuma"
+  echo_yellow "Installing fusuma"
   sudo gpasswd -a $USER input
   sudo apt-get install libinput-tools
   sudo apt-get install ruby
@@ -131,14 +143,15 @@ main(){
     elif [ "$fusuma" = "true" ]; then
       install_fusuma
     else
-      echo "No package specified"
+      echo_red "No package specified"
     fi
   else
-    read -p "No operating system specified. Linux assumed. Continue? [y/n]" -n 1 -r && echo
+    read -p "No operating system specified. Linux assumed. Continue? [y/n]" -n 1 -r
+    echo
     if [ "$REPLY" = Y ] || [ "$REPLY" = y ]; then
       install_linux
     else
-      echo "Exiting." && exit 1
+      echo_red "Exiting." && exit 1
     fi
   fi
 }
@@ -171,7 +184,7 @@ while [[ $# -gt 0 ]]; do
         shift 1 ;;
 
         *)
-        echo "Unknown option: $1";
+        echo_red "Unknown option: $1";
         usage
         exit 1 ;;
     esac
