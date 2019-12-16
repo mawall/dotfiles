@@ -26,11 +26,11 @@ EOF
 }
 
 echo_red(){
-    /bin/echo -e "\033[31m${*}\033[0m]"
+    /bin/echo -e "\033[31m${*}\033[0m"
 }
 
 echo_yellow(){
-    /bin/echo -e "\033[93m${*}\033[0m]"
+    /bin/echo -e "\033[93m${*}\033[0m"
 }
 
 install_linux(){
@@ -61,7 +61,7 @@ install_linux(){
   cp .tmux.conf ~/.tmux.conf
   sudo apt-get update
   sudo apt-get install tmux
-  git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepak
+  git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
   echo_yellow "Installing fzf"
