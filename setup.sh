@@ -243,7 +243,7 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     -h|--help)
     usage
-    shift 1 ;;
+    exit 0 ;;
 
     -l|--linux)
     OS="linux"
