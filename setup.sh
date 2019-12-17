@@ -147,6 +147,22 @@ install_fusuma(){
   cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
 }
 
+uninstall_nvidia_all(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "uninstalling nvidia software is currently only implemented for linux" && return 1
+  fi
+
+  read -p "Do you really want to uninstall all nvidia software [y/n]? " -n 1 -r
+  echo
+  if [ ! "$REPLY" = Y ] && [ ! "$REPLY" = y ]; then
+    echo_red "Exiting." && exit 1
+  else
+    sudo apt-get remove --purge '^nvidia-.*'
+    sudo apt-get remove --purge '^libnvidia-.*'
+    sudo apt autoremove
+  fi
+}
+
 install_nvidia_drivers(){
   check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "nvidia driver installation is currently only implemented for linux" && return 1
@@ -271,6 +287,10 @@ while [[ $# -gt 0 ]]; do
 
     --nvidia_docker)
     PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_docker"
+    shift 1 ;;
+
+    --uninstall_nvidia)
+    uninstall_nvidia_all
     shift 1 ;;
 
     *)
