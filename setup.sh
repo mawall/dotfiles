@@ -2,7 +2,7 @@
 
 usage(){
 cat <<EOF
-USAGE: ./install_linux [OPTIONS]
+USAGE: ./setup [OPTIONS]
     Marcus' system setup script - will install and configure basic software on unix-based systems.
     List of available packages for installation:
         - linux: Basic linux utilities, oh my zsh, tmux and fzf
