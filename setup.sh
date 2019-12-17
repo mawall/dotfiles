@@ -36,6 +36,18 @@ echo_yellow(){
     /bin/echo -e "\033[93m${*}\033[0m"
 }
 
+check_if_linux(){
+  if [ -z "$OS" ]; then
+    read -p "Are you on linux [y/n]? " -n 1 -r
+    echo
+    if [ "$REPLY" = Y ] || [ "$REPLY" = y ]; then
+      OS="linux"
+    else
+      OS="not_linux"
+    fi
+  fi
+}
+
 install_linux(){
   echo_yellow "Installing linux defaults"
   cd ~
@@ -112,7 +124,7 @@ install_mac(){
 }
 
 install_fusuma(){
-  if [ ! "$OS" = "linux" ]; then
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "fusuma can only be installed on linux" && return 1
   fi
 
@@ -132,7 +144,7 @@ install_fusuma(){
 }
 
 install_docker(){
-  if [ ! "$OS" = "linux" ]; then
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "docker installation is currently only implemented for linux" && return 1
   fi
 
@@ -150,7 +162,7 @@ install_docker(){
 }
 
 install_nvidia_docker(){
-  if [ ! "$OS" = "linux" ]; then
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "nvidia-docker installation is currently only implemented for linux" && return 1
   fi
 
@@ -184,7 +196,7 @@ main(){
     echo_red "No operating system specified."
     usage
   else
-    read -p "No operating system specified. Continue to install specified software packages? [y/n]" -n 1 -r
+    read -p "No operating system specified. Continue to install specified software packages [y/n]? " -n 1 -r
     echo
     if [ ! "$REPLY" = Y ] && [ ! "$REPLY" = y ]; then
       echo_red "Exiting." && exit 1
