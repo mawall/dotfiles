@@ -291,7 +291,7 @@ while [[ $# -gt 0 ]]; do
 
     --uninstall_nvidia)
     uninstall_nvidia_all
-    shift 1 ;;
+    exit 0 ;;
 
     *)
     echo_red "Unknown option: $1";
