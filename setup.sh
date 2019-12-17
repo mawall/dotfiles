@@ -9,6 +9,8 @@ USAGE: ./setup [OPTIONS]
         - mac: Homebrew, oh my zsh, tmux and fzf
         - fusuma: Multitouch gestures for Ubuntu
         - docker: Latest stable release for distribution
+        - nvidia drivers: Latest stable Nvidia drivers for Ubuntu
+        - nvidia cuda: Installs kernel headers and latest cuda packages
         - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
     Tested on Ubuntu 18.04 and macOS Mojave.
 
@@ -24,6 +26,8 @@ OPTIONS:
     -m|--mac                Install mac default package
     -f|--fusuma             Install fusuma package
     -d|--docker             Install or uninstall and reinstall docker
+       --nvidia_drivers     Install nvidia drivers
+       --nvidia_cuda        Install nvidia cuda package
        --nvidia_docker      Install nvidia-docker package
 EOF
 }
@@ -143,6 +147,31 @@ install_fusuma(){
   cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
 }
 
+install_nvidia_drivers(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "nvidia driver installation is currently only implemented for linux" && return 1
+  fi
+
+  echo_yellow "Installing nvidia drivers"
+  sudo apt-get purge nvidia-*
+  sudo apt-get install ubuntu-drivers-common && sudo ubuntu-drivers autoinstall
+  echo_yellow "Reboot machine now!"
+}
+
+install_nvidia_cuda(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "cuda installation is currently only implemented for linux" && return 1
+  fi
+
+  echo_yellow "Installing nvidia cuda"
+  cd ~
+  sudo apt-get install linux-headers-"$(uname -r)"
+  sudo apt-get purge nvidia-cuda*
+  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+  sudo sh cuda_10.2.89_440.33.01_linux.run --override
+  sudo apt-get install nvidia-container-runtime
+}
+
 install_docker(){
   check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "docker installation is currently only implemented for linux" && return 1
@@ -158,7 +187,6 @@ install_docker(){
   sudo apt -y install docker-ce docker-ce-cli containerd.io
   sudo usermod -aG docker $USER
   newgrp docker
-  docker version
 }
 
 install_nvidia_docker(){
@@ -212,36 +240,44 @@ OS=""
 PACKAGES_TO_INSTALL=""
 while [[ $# -gt 0 ]]; do
 
-    case $1 in
-        -h|--help)
-        usage
-        shift 1 ;;
+  case $1 in
+    -h|--help)
+    usage
+    shift 1 ;;
 
-        -l|--linux)
-        OS="linux"
-        shift 1 ;;
+    -l|--linux)
+    OS="linux"
+    shift 1 ;;
 
-        -m|--mac)
-        OS="mac"
-        shift 1 ;;
+    -m|--mac)
+    OS="mac"
+    shift 1 ;;
 
-        -f|--fusuma)
-        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} fusuma"
-        shift 1 ;;
+    -f|--fusuma)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} fusuma"
+    shift 1 ;;
 
-        -d|--docker)
-        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} docker"
-        shift 1 ;;
+    -d|--docker)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} docker"
+    shift 1 ;;
 
-        --nvidia_docker)
-        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_docker"
-        shift 1 ;;
+    --nvidia_drivers)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_drivers"
+    shift 1 ;;
 
-        *)
-        echo_red "Unknown option: $1";
-        usage
-        exit 1 ;;
-    esac
+    --nvidia_cuda)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_cuda"
+    shift 1 ;;
+
+    --nvidia_docker)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_docker"
+    shift 1 ;;
+
+    *)
+    echo_red "Unknown option: $1";
+    usage
+    exit 1 ;;
+  esac
 
 done
 main
