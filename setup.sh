@@ -8,20 +8,21 @@ USAGE: ./install_linux [OPTIONS]
         - linux: Basic linux utilities, oh my zsh, tmux and fzf
         - mac: Homebrew, oh my zsh, tmux and fzf
         - fusuma: Multitouch gestures for Ubuntu
-    If the 'specified_only' option is not given, only the linux package will be installed.
+        - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
     Tested on Ubuntu 18.04 and macOS Mojave.
 
-    After installation remember to:
-        1. Check fusuma installation paht using 'which fusuma'
+    After the installation remember to:
+        - Use 'prefix + I' when first starting tmux to install plugins
+    If you installed fusuma:
+        1. Check fusuma installation path using 'which fusuma'
         2. Press alt + F2, enter 'gnome-session-properties'
         3. Add fusuma using the -d option
-        4. Use 'prefix + I' when first starting tmux to install plugins
 
 OPTIONS:
-    -s|--specified_only     Install specified packages only
     -l|--linux              Install linux default package
     -m|--mac                Install mac default package
     -f|--fusuma             Install fusuma package
+       --nvidia_docker      Install nvidia-docker package
 EOF
 }
 
@@ -109,7 +110,7 @@ install_mac(){
 }
 
 install_fusuma(){
-  # Install fusuma for multitouch gestures
+  # Install fusuma for trackpad multitouch gestures
   # https://github.com/iberianpig/fusuma/
   echo_yellow "Installing fusuma"
   sudo gpasswd -a $USER input
@@ -125,6 +126,18 @@ install_fusuma(){
   cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
 }
 
+install_nvidia_docker(){
+  cd ~
+  # From https://github.com/NVIDIA/nvidia-docker
+  # Add the package repositories
+  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+  curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+  sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+  sudo systemctl restart docker
+}
+
 configure_vim(){
   tic -o ~/.terminfo xterm-256color.terminfo
   export TERM=xterm-256color
@@ -136,31 +149,26 @@ configure_vim(){
 
 
 main(){
-  if [ "$specified_only" = "true" ]; then
-    if [ "$linux" = "true" ]; then
-      install_linux
-    elif [ "$mac" = "true" ]; then
-      install_mac
-    elif [ "$fusuma" = "true" ]; then
-      install_fusuma
-    else
-      echo_red "No package specified"
-    fi
+  if [ -n "$OS" ]; then
+    install_"$OS"
+  elif [ -z "$PACKAGES_TO_INSTALL" ]; then
+    echo_red "No operating system specified."
+    usage
   else
-    read -p "No operating system specified. Linux assumed. Continue? [y/n]" -n 1 -r
+    read -p "No operating system specified. Continue to install specified software packages? [y/n]" -n 1 -r
     echo
-    if [ "$REPLY" = Y ] || [ "$REPLY" = y ]; then
-      install_linux
-    else
+    if [ ! "$REPLY" = Y ] && [ ! "$REPLY" = y ]; then
       echo_red "Exiting." && exit 1
     fi
   fi
+
+  for PACKAGE in $PACKAGES_TO_INSTALL; do
+    install_"$PACKAGE"
+  done
 }
 
-specified_only="false"
-linux="false"
-mac="false"
-fusuma="false"
+OS=""
+PACKAGES_TO_INSTALL=""
 while [[ $# -gt 0 ]]; do
 
     case $1 in
@@ -169,19 +177,19 @@ while [[ $# -gt 0 ]]; do
         shift 1 ;;
 
         -l|--linux)
-        linux="true"
+        OS="linux"
         shift 1 ;;
 
         -m|--mac)
-        mac="true"
+        OS="mac"
         shift 1 ;;
 
         -f|--fusuma)
-        fusuma="true"
+        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} fusuma"
         shift 1 ;;
 
-        -s|--specified_only)
-        specified_only="true"
+        --nvidia_docker)
+        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_docker"
         shift 1 ;;
 
         *)
