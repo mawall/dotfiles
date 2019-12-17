@@ -159,9 +159,9 @@ uninstall_nvidia_all(){
   if [ ! "$REPLY" = Y ] && [ ! "$REPLY" = y ]; then
     echo_red "Exiting." && exit 1
   else
-    sudo apt-get remove --purge '^nvidia-.*'
-    sudo apt-get remove --purge '^libnvidia-.*'
-    sudo apt autoremove
+    sudo apt-get -y purge '^nvidia-.*'
+    sudo apt-get -y purge '^libnvidia-.*'
+    sudo apt-get -y autoremove
   fi
 }
 
@@ -184,7 +184,7 @@ install_nvidia_cuda(){
   echo_yellow "Installing nvidia cuda"
   cd ~
   sudo apt-get -y install linux-headers-"$(uname -r)"
-  sudo apt-get purge nvidia-cuda*
+  sudo apt-get -y purge nvidia-cuda*
 #  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
 #  sudo sh cuda_10.2.89_440.33.01_linux.run --override
   sudo apt-get -y install nvidia-cuda-toolkit
