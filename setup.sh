@@ -8,6 +8,7 @@ USAGE: ./setup [OPTIONS]
         - linux: Basic linux utilities, oh my zsh, tmux and fzf
         - mac: Homebrew, oh my zsh, tmux and fzf
         - fusuma: Multitouch gestures for Ubuntu
+        - docker: Latest stable release for distribution
         - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
     Tested on Ubuntu 18.04 and macOS Mojave.
 
@@ -22,6 +23,7 @@ OPTIONS:
     -l|--linux              Install linux default package
     -m|--mac                Install mac default package
     -f|--fusuma             Install fusuma package
+    -d|--docker             Install or uninstall and reinstall docker
        --nvidia_docker      Install nvidia-docker package
 EOF
 }
@@ -110,6 +112,10 @@ install_mac(){
 }
 
 install_fusuma(){
+  if [ ! "$OS" = "linux" ]; then
+    echo_red "fusuma can only be installed on linux" && return 1
+  fi
+
   # Install fusuma for trackpad multitouch gestures
   # https://github.com/iberianpig/fusuma/
   echo_yellow "Installing fusuma"
@@ -120,19 +126,42 @@ install_fusuma(){
   sudo apt-get install xdotool
   gsettings set org.gnome.desktop.peripherals.touchpad send-events enabled
   sudo gem update fusuma
-
   # create config file
   mkdir -p ~/.config/fusuma
   cp ~/dotfiles/config.yml ~/.config/fusuma/config.yml
 }
 
+install_docker(){
+  if [ ! "$OS" = "linux" ]; then
+    echo_red "docker installation is currently only implemented for linux" && return 1
+  fi
+
+  echo_yellow "Installing latest stable docker release"
+  sudo apt -y update
+  sudo apt -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+  sudo apt remove docker docker-engine docker.io containerd runc
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  sudo apt update
+  sudo apt -y install docker-ce docker-ce-cli containerd.io
+  sudo usermod -aG docker $USER
+  newgrp docker
+  docker version
+}
+
 install_nvidia_docker(){
+  if [ ! "$OS" = "linux" ]; then
+    echo_red "nvidia-docker installation is currently only implemented for linux" && return 1
+  fi
+
+  echo_yellow "Installing nvidia-docker"
   cd ~
   # From https://github.com/NVIDIA/nvidia-docker
   # Add the package repositories
   distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
   curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 
   sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
   sudo systemctl restart docker
@@ -186,6 +215,10 @@ while [[ $# -gt 0 ]]; do
 
         -f|--fusuma)
         PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} fusuma"
+        shift 1 ;;
+
+        -d|--docker)
+        PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} docker"
         shift 1 ;;
 
         --nvidia_docker)
