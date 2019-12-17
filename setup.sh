@@ -26,8 +26,8 @@ OPTIONS:
     -m|--mac                Install mac default package
     -f|--fusuma             Install fusuma package
     -d|--docker             Install or uninstall and reinstall docker
-       --nvidia_drivers     Install nvidia drivers
-       --nvidia_cuda        Install nvidia cuda package
+       --nvidia_drivers     Install or uninstall and reinstall nvidia drivers
+       --nvidia_cuda        Install or uninstall and reinstall nvidia cuda
        --nvidia_docker      Install nvidia-docker package
 EOF
 }
