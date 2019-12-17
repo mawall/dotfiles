@@ -29,6 +29,8 @@ OPTIONS:
        --nvidia_drivers     Install or uninstall and reinstall nvidia drivers
        --nvidia_cuda        Install or uninstall and reinstall nvidia cuda
        --nvidia_docker      Install nvidia-docker package
+
+       --uninstall_nvidia   Uninstalls all nvidia software. If specified, the script will exit afterwards
 EOF
 }
 
@@ -170,7 +172,7 @@ install_nvidia_drivers(){
 
   echo_yellow "Installing nvidia drivers"
   sudo apt-get purge nvidia-*
-  sudo apt-get install ubuntu-drivers-common && sudo ubuntu-drivers autoinstall
+  sudo apt-get -y install ubuntu-drivers-common && sudo ubuntu-drivers autoinstall
   echo_yellow "Reboot machine now!"
 }
 
@@ -181,11 +183,13 @@ install_nvidia_cuda(){
 
   echo_yellow "Installing nvidia cuda"
   cd ~
-  sudo apt-get install linux-headers-"$(uname -r)"
+  sudo apt-get -y install linux-headers-"$(uname -r)"
   sudo apt-get purge nvidia-cuda*
-  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
-  sudo sh cuda_10.2.89_440.33.01_linux.run --override
-  sudo apt-get install nvidia-container-runtime
+#  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+#  sudo sh cuda_10.2.89_440.33.01_linux.run --override
+  sudo apt-get -y install nvidia-cuda-toolkit
+  sudo apt-get -y install nvidia-container-runtime
+  sudo systemctl restart docker
 }
 
 install_docker(){
