@@ -31,6 +31,7 @@ OPTIONS:
        --nvidia_docker      Install nvidia-docker package
 
        --uninstall_nvidia   Uninstalls all nvidia software. If specified, the script will exit afterwards
+       --uninstall_docker   Uninstalls docker. If specified, the script will exit afterwards
 EOF
 }
 
@@ -165,6 +166,22 @@ uninstall_nvidia_all(){
   fi
 }
 
+uninstall_docker(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "uninstalling docker is currently only implemented for linux" && return 1
+  fi
+
+  read -p "Do you really want to uninstall docker [y/n]? " -n 1 -r
+  echo
+  if [ ! "$REPLY" = Y ] && [ ! "$REPLY" = y ]; then
+    echo_red "Exiting." && exit 1
+  else
+    sudo apt-get -y purge '^docker-.*'
+    sudo apt-get -y purge containerd runc
+    sudo apt-get -y autoremove
+  fi
+}
+
 install_nvidia_drivers(){
   check_if_linux && if [ ! "$OS" = "linux" ]; then
     echo_red "nvidia driver installation is currently only implemented for linux" && return 1
@@ -200,7 +217,7 @@ install_docker(){
   echo_yellow "Installing latest stable docker release"
   sudo apt -y update
   sudo apt -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-  sudo apt remove docker docker-engine docker.io containerd runc
+  sudo apt -y remove docker docker-ce docker-ce-cli docker-engine docker.io containerd runc
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   sudo apt update
@@ -295,6 +312,10 @@ while [[ $# -gt 0 ]]; do
 
     --uninstall_nvidia)
     uninstall_nvidia_all
+    exit 0 ;;
+
+    --uninstall_docker)
+    uninstall_docker
     exit 0 ;;
 
     *)
