@@ -12,6 +12,7 @@ USAGE: ./setup [OPTIONS]
         - nvidia drivers: Latest stable Nvidia drivers for Ubuntu
         - nvidia cuda: Installs kernel headers and latest cuda packages
         - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
+        - nvtop: An htop like GPU status monitor
     Tested on Ubuntu 18.04 and macOS Mojave.
 
     After the installation remember to:
@@ -29,6 +30,7 @@ OPTIONS:
        --nvidia_drivers     Install or uninstall and reinstall nvidia drivers
        --nvidia_cuda        Install or uninstall and reinstall nvidia cuda
        --nvidia_docker      Install nvidia-docker package
+       --nvtop              Install nvtop package
 
        --uninstall_nvidia   Uninstalls all nvidia software. If specified, the script will exit afterwards
        --uninstall_docker   Uninstalls docker. If specified, the script will exit afterwards
@@ -255,6 +257,21 @@ install_nvidia_docker(){
   sudo systemctl restart docker
 }
 
+install_nvtop(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "nvtop installation is currently only implemented for linux" && return 1
+  fi
+
+  echo_yellow "Installing nvtop"
+  cd ~
+  sudo apt install cmake libncurses5-dev libncursesw5-dev git
+  git clone https://github.com/Syllo/nvtop.git
+  mkdir -p nvtop/build && cd nvtop/build
+  cmake ..
+  make && sudo make install
+  cd ~ && rm -rf nvtop
+}
+
 configure_vim(){
   tic -o ~/.terminfo xterm-256color.terminfo
   export TERM=xterm-256color
@@ -319,6 +336,10 @@ while [[ $# -gt 0 ]]; do
 
     --nvidia_docker)
     PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvidia_docker"
+    shift 1 ;;
+
+    --nvtop)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvtop"
     shift 1 ;;
 
     --uninstall_nvidia)
