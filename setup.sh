@@ -189,7 +189,13 @@ install_nvidia_drivers(){
 
   echo_yellow "Installing nvidia drivers"
   sudo apt-get purge nvidia-*
+
+#  # Get right driver for architecture/gpu from https://www.nvidia.com/Download/index.aspx?lang=en-us
+#  wget http://uk.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run
+#  sudo sh NVIDIA-Linux-x86_64-440.44.run
+
   sudo apt-get -y install ubuntu-drivers-common && sudo ubuntu-drivers autoinstall
+
   echo_yellow "Reboot machine now!"
 }
 
@@ -202,10 +208,14 @@ install_nvidia_cuda(){
   cd ~
   sudo apt-get -y install linux-headers-"$(uname -r)"
   sudo apt-get -y purge nvidia-cuda*
+
+#  # Manual install of cuda dependencies, if we don't use apt:
+#  sudo apt-get install freeglut3 freeglut3-dev libxi-dev libxmu-dev
+#  # Get right cuda version for architecture from https://developer.nvidia.com/cuda-downloads
 #  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
 #  sudo sh cuda_10.2.89_440.33.01_linux.run --override
-  sudo apt-get -y install nvidia-cuda-toolkit
-  sudo apt-get -y install nvidia-container-runtime
+  sudo apt-get -y install nvidia-cuda-dev nvidia-cuda-doc  nvidia-cuda-gdb nvidia-cuda-toolkit nvidia-container-runtime
+
   sudo systemctl restart docker
 }
 
