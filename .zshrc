@@ -134,6 +134,29 @@ unset __conda_setup
 
 
 # -----------------------------------------------------------------------------
+# AWS AND GCLOUD SETTINGS
+# -----------------------------------------------------------------------------
+
+# Update PATH for gcloud SDK
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]
+then . "$HOME/google-cloud-sdk/path.zsh.inc"
+fi
+
+# Enable command completion for gcloud
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]
+then . "$HOME/google-cloud-sdk/completion.zsh.inc"
+fi
+
+# Enable command completion for aws
+if [ -f "$HOME/.local/bin/aws_zsh_completer.sh" ]
+then . "$HOME/.local/bin/aws_zsh_completer.sh"
+fi
+
+# Set AWS default profile
+export AWS_DEFAULT_PROFILE='mawall'
+
+
+# -----------------------------------------------------------------------------
 # MISC SETTINGS
 # -----------------------------------------------------------------------------
 
@@ -147,15 +170,3 @@ export TERM=xterm-256color
 # debugging info available when we add CMAKE += -g:
 CFLAGS='-Wall -Wextra'
 
-# Update PATH for Google Cloud SDK
-if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]
-then . "$HOME/google-cloud-sdk/path.zsh.inc"
-fi
-
-# Enable command completion for gcloud
-if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]
-then . "$HOME/google-cloud-sdk/completion.zsh.inc"
-fi
-
-# Set AWS default profile
-export AWS_DEFAULT_PROFILE='mawall'
