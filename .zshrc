@@ -1,5 +1,19 @@
-# If you come from bash you might have to change your $PATH.
+# ZSH CONFIG - github.com/mawall/dotfiles
+
+# -----------------------------------------------------------------------------
+# PATH SETTINGS
+# -----------------------------------------------------------------------------
+
+# Add ~/bin and /usr/local/bin to path
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Add ~/.local/bin to path
+# export PATH="$HOME/.local/bin:$PATH"
+
+
+# -----------------------------------------------------------------------------
+# OH MY ZSH SETTINGS
+# -----------------------------------------------------------------------------
 
 # Path to your oh-my-zsh installation.
 export ZSH="/home/marcus/.oh-my-zsh"
@@ -98,26 +112,50 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# FZF support
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# -----------------------------------------------------------------------------
+# CONDA SETTINGS
+# -----------------------------------------------------------------------------
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/marcus/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$("$HOME/anaconda3/bin/conda" 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/marcus/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/marcus/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/anaconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/marcus/anaconda3/bin:$PATH"
+        export PATH="$HOME/anaconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-# Add local bin to path
-export PATH="/home/marcus/.local/bin:$PATH"
+
+# -----------------------------------------------------------------------------
+# MISC SETTINGS
+# -----------------------------------------------------------------------------
+
+# FZF support
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Make sure TERM is set correctly to enable italics
 export TERM=xterm-256color
+
+# Set CMAKE to instruct compiler to give us the most 
+# debugging info available when we add CMAKE += -g:
+CFLAGS='-Wall -Wextra'
+
+# Update PATH for Google Cloud SDK
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]
+then . "$HOME/google-cloud-sdk/path.zsh.inc"
+fi
+
+# Enable command completion for gcloud
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]
+then . "$HOME/google-cloud-sdk/completion.zsh.inc"
+fi
+
+# Set AWS default profile
+export AWS_DEFAULT_PROFILE='mawall'

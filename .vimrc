@@ -1,4 +1,4 @@
-" VIM CONFIG - github.com/mawall
+" VIM CONFIG - github.com/mawall/dotfiles
 
 " GENERAL SETTINGS {{{
 set nocompatible 		" no vi compatability
