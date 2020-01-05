@@ -13,6 +13,7 @@ USAGE: ./setup [OPTIONS]
         - nvidia cuda: Installs kernel headers and latest cuda packages
         - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
         - nvtop: An htop like GPU status monitor
+        - dropbox: Dropbox daemon
     Tested on Ubuntu 18.04 and macOS Mojave.
 
     After the installation remember to:
@@ -31,6 +32,7 @@ OPTIONS:
        --nvidia_cuda        Install or uninstall and reinstall nvidia cuda
        --nvidia_docker      Install nvidia-docker package
        --nvtop              Install nvtop package
+       --dropbox            Install dropbox package
 
        --uninstall_nvidia   Uninstalls all nvidia software. If specified, the script will exit afterwards
        --uninstall_docker   Uninstalls docker. If specified, the script will exit afterwards
@@ -206,8 +208,7 @@ install_nvidia_cuda(){
     echo_red "cuda installation is currently only implemented for linux" && return 1
   fi
 
-  echo_yellow "Installing nvidia cuda"
-  cd ~
+  cd ~ && echo_yellow "Installing nvidia cuda"
   sudo apt-get -y install linux-headers-"$(uname -r)"
   sudo apt-get -y purge nvidia-cuda*
 
@@ -244,8 +245,7 @@ install_nvidia_docker(){
     echo_red "nvidia-docker installation is currently only implemented for linux" && return 1
   fi
 
-  echo_yellow "Installing nvidia-docker"
-  cd ~
+  cd ~ && echo_yellow "Installing nvidia-docker"
   # From https://github.com/NVIDIA/nvidia-docker
   # Add the package repositories
   distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
@@ -262,14 +262,25 @@ install_nvtop(){
     echo_red "nvtop installation is currently only implemented for linux" && return 1
   fi
 
-  echo_yellow "Installing nvtop"
-  cd ~
+  cd ~ && echo_yellow "Installing nvtop"
   sudo apt install cmake libncurses5-dev libncursesw5-dev git
   git clone https://github.com/Syllo/nvtop.git
   mkdir -p nvtop/build && cd nvtop/build
   cmake ..
   make && sudo make install
   cd ~ && rm -rf nvtop
+}
+
+install_dropbox(){
+  check_if_linux && if [ ! "$OS" = "linux" ]; then
+    echo_red "nvtop installation is currently only implemented for linux" && return 1
+  fi
+
+  cd ~ && echo_yellow "Installing dropbox"
+  wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+  sudo wget -O /usr/local/bin/dropbox "https://www.dropbox.com/download?dl=packages/dropbox.py"
+  sudo chmod +x /usr/local/bin/dropbox
+  dropbox start && dropbox autostart y
 }
 
 configure_vim(){
@@ -340,6 +351,10 @@ while [[ $# -gt 0 ]]; do
 
     --nvtop)
     PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} nvtop"
+    shift 1 ;;
+
+    --dropbox)
+    PACKAGES_TO_INSTALL="${PACKAGES_TO_INSTALL} dropbox"
     shift 1 ;;
 
     --uninstall_nvidia)
