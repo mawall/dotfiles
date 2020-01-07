@@ -3,20 +3,24 @@
 usage(){
 cat <<EOF
 USAGE: ./setup [OPTIONS]
-    Marcus' system setup script - will install and configure basic software on unix-based systems.
-    List of available packages for installation:
-        - linux: Basic linux utilities, oh my zsh, tmux and fzf
-        - mac: Homebrew, oh my zsh, tmux and fzf
-        - fusuma: Multitouch gestures for Ubuntu
-        - docker: Latest stable release for distribution
-        - nvidia drivers: Latest stable Nvidia drivers for Ubuntu
-        - nvidia cuda: Installs kernel headers and latest cuda packages
-        - nvidia-docker: Nvidia container toolkit to build and run GPU accelerated Docker containers
-        - nvtop: An htop like GPU status monitor
-        - dropbox: Dropbox daemon
-    Tested on Ubuntu 18.04 and macOS Mojave.
+    Marcus' system setup script - install software and configure environment on unix-based systems.
 
-    After the installation remember to:
+    List of available packages for installation:
+        - linux:            Basic linux utilities, oh my zsh, tmux and fzf
+        - mac:              Homebrew, oh my zsh, tmux and fzf
+        - fusuma:           Multitouch gestures for Ubuntu
+        - docker:           Latest stable release for distribution
+        - nvidia drivers:   Latest stable Nvidia drivers for Ubuntu
+        - nvidia cuda:      Installs kernel headers and latest cuda packages
+        - nvidia-docker:    Nvidia container toolkit to build and run GPU accelerated Docker containers
+        - nvtop:            An htop like GPU status monitor
+        - dropbox:          Dropbox daemon
+
+    Tested on :
+        - Ubuntu 18.04
+        - macOS Mojave
+
+    After the installation, remember to:
         - Use 'prefix + I' when first starting tmux to install plugins
     If you installed fusuma:
         1. Check fusuma installation path using 'which fusuma'
@@ -280,7 +284,14 @@ install_dropbox(){
   wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
   sudo wget -O /usr/local/bin/dropbox "https://www.dropbox.com/download?dl=packages/dropbox.py"
   sudo chmod +x /usr/local/bin/dropbox
-  dropbox start && dropbox autostart y
+  dropbox start
+  dropbox autostart y && dropbox exclude add ~/Dropbox/data ~/Dropbox/photos
+  mkdir ~/.config/autostart && cat <<EOF > ~/.config/autostart/dropbox.desktop
+[Desktop Entry]
+Type=Application
+Name=Dropbox
+Exec=dropbox start
+EOF
 }
 
 configure_vim(){
