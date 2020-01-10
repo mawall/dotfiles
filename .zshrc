@@ -4,6 +4,9 @@
 # PATH SETTINGS
 # -----------------------------------------------------------------------------
 
+# Add sst to path
+export PATH=$HOME/.sst/bin:$PATH
+
 # Add ~/bin and /usr/local/bin to path
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
