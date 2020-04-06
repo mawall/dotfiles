@@ -8,7 +8,7 @@
 export PATH=$HOME/.sst/bin:$PATH
 
 # Add scripts dir to path
-export PATH=$HOME/scripts:$PATH
+export PATH=$HOME/bin:$PATH
 
 # Add ~/bin and /usr/local/bin to path
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
