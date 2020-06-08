@@ -79,6 +79,12 @@ nnoremap <leader>O :Files!<CR>
 
 " use space to toggle folds
 nnoremap <space> za
+
+" map ctrl-c to copy to system clipboard
+vnoremap <C-c> "+y
+
+" map ctrl-x to cut to system clipboard
+vnoremap <C-x> "+d
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
